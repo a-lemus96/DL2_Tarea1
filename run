@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH --partition=GPU
+#SBATCH --job-name=pattern_models
+#SBATCH --output=results.log
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=giovanni.lopez@cimat.mx
+cd /home/est_posgrado_alejandro.lemus/DL2/Tarea1
+source /opt/anaconda3_titan/bin/activate
+conda activate Deep2
+hostname
+date
+python3 p.py
+date
