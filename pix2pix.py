@@ -386,15 +386,15 @@ def fit(train_ds, test_ds, steps):
 
 
 fit(train_lx_rx_y, test_lx_rx_y, steps=1000)
-example_input, example_target = next(iter(test_ds.take(1)))
+example_input, example_target = next(iter(test_lx_rx_y.take(1)))
 
-plt.figure(figsize(6, 12))
+plt.figure(figsize=(6, 12))
 plt.subplot(1, 2, 1)
-plt.imshow((example_target + 1)/2) # Right-view
+plt.imshow((example_target[0] + 1)/2) # Right-view
 plt.axis('off')
 
 plt.subplot(1, 2, 2)
-plt.imshow((generator(example_input, training=False) + 1)/2, cmap='gray') # Target
+plt.imshow((generator(example_input, training=False)[0, ...] + 1)/2, cmap='gray') # Target
 plt.axis('off')
 
 plt.savefig('test_model.png')

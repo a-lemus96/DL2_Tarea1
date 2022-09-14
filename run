@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=GPU
-#SBATCH --job-name=pattern_models
+#SBATCH --job-name=tareadelemus
 #SBATCH --output=results.log
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=alejandro.lemus@cimat.mx
