@@ -390,7 +390,7 @@ example_input, example_target = next(iter(test_ds.take(1)))
 
 plt.figure(figsize(6, 12))
 plt.subplot(1, 2, 1)
-plt.imshow(((example_target + 1)/2) # Right-view
+plt.imshow((example_target + 1)/2) # Right-view
 plt.axis('off')
 
 plt.subplot(1, 2, 2)
