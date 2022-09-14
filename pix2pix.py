@@ -25,11 +25,11 @@ X_RIGHT_FOLDER = "/home/est_posgrado_alejandro.lemus/DL2/Tarea1/training_data/ri
 Y_TARGET_FOLDER = "/home/est_posgrado_alejandro.lemus/DL2/Tarea1/training_data/target_Y"
 
 # Create lists of file directories
-left_x_files = glob(os.path.join(X_LEFT_FOLDER, '*.png')).sort()
-right_x_files = glob(os.path.join(X_RIGHT_FOLDER, '*.png')).sort()
-target_y_files = glob(os.path.join(Y_TARGET_FOLDER, '*.png')).sort()
+left_x_files = np.array(glob(os.path.join(X_LEFT_FOLDER, '*.png')).sort())
+right_x_files = np.array(glob(os.path.join(X_RIGHT_FOLDER, '*.png')).sort())
+target_y_files = np.array(glob(os.path.join(Y_TARGET_FOLDER, '*.png')).sort())
 
 
 
-for (lx, rx, y) in zip(left_x_files[:5], right_x_files[:5], target_y_files[:5]):
+for lx, rx, y in zip(left_x_files[:5], right_x_files[:5], target_y_files[:5]):
     print(f"{lx}\n{rx}\n{y}\n\n")
