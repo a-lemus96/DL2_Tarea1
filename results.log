@@ -1,20 +1,20 @@
 g-0-10
-Wed 14 Sep 2022 06:08:08 PM CDT
-2022-09-14 18:08:10.744034: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F AVX512_VNNI FMA
+Wed 14 Sep 2022 06:15:22 PM CDT
+2022-09-14 18:15:25.415063: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F AVX512_VNNI FMA
 To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
-2022-09-14 18:08:10.925927: I tensorflow/core/util/util.cc:169] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-2022-09-14 18:08:10.974996: E tensorflow/stream_executor/cuda/cuda_blas.cc:2981] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
-2022-09-14 18:08:12.740976: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory
-2022-09-14 18:08:12.741068: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory
-2022-09-14 18:08:12.741079: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
-2022-09-14 18:08:17.121168: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F AVX512_VNNI FMA
+2022-09-14 18:15:25.578263: I tensorflow/core/util/util.cc:169] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2022-09-14 18:15:25.625921: E tensorflow/stream_executor/cuda/cuda_blas.cc:2981] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2022-09-14 18:15:27.423759: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory
+2022-09-14 18:15:27.423837: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory
+2022-09-14 18:15:27.423847: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+2022-09-14 18:15:32.064835: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F AVX512_VNNI FMA
 To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
-2022-09-14 18:08:18.336574: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1616] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 22832 MB memory:  -> device: 0, name: NVIDIA TITAN RTX, pci bus id: 0000:18:00.0, compute capability: 7.5
-2022-09-14 18:08:18.337468: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1616] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 22832 MB memory:  -> device: 1, name: NVIDIA TITAN RTX, pci bus id: 0000:86:00.0, compute capability: 7.5
-2022-09-14 18:08:20.808029: I tensorflow/stream_executor/cuda/cuda_dnn.cc:384] Loaded cuDNN version 8302
-2022-09-14 18:08:21.471618: I tensorflow/core/platform/default/subprocess.cc:304] Start cannot spawn child process: No such file or directory
-2022-09-14 18:08:23.503632: I tensorflow/core/grappler/optimizers/data/replicate_on_split.cc:32] Running replicate on split optimization
-2022-09-14 18:08:23.902587: I tensorflow/core/platform/default/subprocess.cc:304] Start cannot spawn child process: No such file or directory
+2022-09-14 18:15:33.344377: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1616] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 22832 MB memory:  -> device: 0, name: NVIDIA TITAN RTX, pci bus id: 0000:18:00.0, compute capability: 7.5
+2022-09-14 18:15:33.345209: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1616] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 22832 MB memory:  -> device: 1, name: NVIDIA TITAN RTX, pci bus id: 0000:86:00.0, compute capability: 7.5
+2022-09-14 18:15:35.899518: I tensorflow/stream_executor/cuda/cuda_dnn.cc:384] Loaded cuDNN version 8302
+2022-09-14 18:15:36.602886: I tensorflow/core/platform/default/subprocess.cc:304] Start cannot spawn child process: No such file or directory
+2022-09-14 18:15:39.030912: I tensorflow/core/grappler/optimizers/data/replicate_on_split.cc:32] Running replicate on split optimization
+2022-09-14 18:15:39.526239: I tensorflow/core/platform/default/subprocess.cc:304] Start cannot spawn child process: No such file or directory
 First 5 triplets of files:
 
 training_data/left_X/alley_1_0001.png
@@ -47,4 +47,4 @@ Steps per epoch: 1064
 (1, 256, 256, 3)
 (1, 256, 256, 1)
 [2K[2KStep: 0k
-....................................................................................................Wed 14 Sep 2022 06:09:15 PM CDT
+.Wed 14 Sep 2022 06:15:48 PM CDT
