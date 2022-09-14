@@ -251,3 +251,71 @@ plt.figure(figsize=(6.5,6.5))
 plt.imshow(gen_output[0, ...]*50, cmap='gray')
 plt.axis('off')
 plt.savefig("test_generator.png")
+
+# Discriminator
+def Discriminator():
+    initializer = tf.random_normal_initializer(0., 0.02)
+
+    inp = tf.keras.layers.Input(shape=[256, 256, 6], name='input_image')
+    tar = tf.keras.layers.Input(shape=[256, 256, 1], name='target_image')
+    x = tf.keras.layers.concatenate([inp, tar],  axis=-1)
+
+    down1 = downsample(64, 4, False)(x) # (batch_size, 128, 128, 64)
+    down2 = downsample(128, 4)(down1)    # (batch_size, 64, 64, 128)
+    down3 = downsample(256, 4)(down2)    # (batch_size, 32, 32, 256)
+
+    zero_pad1 = tf.keras.layers.ZeroPadding2D()(down3)
+
+    conv = tf.keras.layers.Conv2D(512, 4, strides=1,
+                                kernel_initializer=initializer,
+                                use_bias=False)(zero_pad1)  # (batch_size, 31, 31, 512)
+
+    batchnorm1 = tf.keras.layers.BatchNormalization()(conv)
+    leaky_relu = tf.keras.layers.LeakyReLU()(batchnorm1)
+
+    zero_pad2 = tf.keras.layers.ZeroPadding2D()(leaky_relu)  # (batch_size, 33, 33, 512)
+    last = tf.keras.layers.Conv2D(filters=1, 
+                                  kernel_size=4, 
+                                  strides=1,
+                                  kernel_initializer=initializer)(zero_pad2)  # (batch_size, 30, 30, 1)
+
+    return tf.keras.Model(inputs=[inp, tar], outputs=last)
+
+discriminator = Discriminator()
+disc_out = discriminator([x_imgs[0][tf.newaxis, ...], gen_output], training=False)
+
+plt.figure(figsize=(10,5))
+plt.subplot(121)
+plt.imshow(gen_output[0, ...]*50, cmap='gray')
+plt.subplot(122)
+plt.imshow(disc_out[0, ..., -1]*200, vmin=-20, vmax=20, cmap='RdBu_r')  #*100
+plt.colorbar()
+plt.savefig('test_discriminator.png')
+
+
+# Generator loss
+LAMBDA = 100
+loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+def generator_loss(disc_generated_output, gen_output, target):
+  gan_loss = loss_object(tf.ones_like(disc_generated_output), disc_generated_output)
+
+  # Mean absolute error
+  l1_loss = tf.reduce_mean(tf.abs(target - gen_output))
+
+  total_gen_loss = gan_loss + (LAMBDA * l1_loss)
+
+  return total_gen_loss, gan_loss, l1_loss
+
+# Discriminator loss
+def discriminator_loss(disc_real_output, disc_generated_output):
+  real_loss = loss_object(tf.ones_like(disc_real_output), disc_real_output)
+
+  generated_loss = loss_object(tf.zeros_like(disc_generated_output), disc_generated_output)
+
+  total_disc_loss = real_loss + generated_loss
+
+  return total_disc_loss
+
+# Define optimizers
+generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
