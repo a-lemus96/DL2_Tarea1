@@ -1,5 +1,6 @@
 import os
 from glob import glob
+from random import shuffle
 import numpy as np
 import matplotlib.pyplot as plt
 import pathlib
@@ -78,7 +79,7 @@ def load_images(left_file, right_file, target_file):
     return x, y
 
 
-# Function for saving images on a .jpg file for further consulting
+# Function for saving images on a .png file for further consulting
 def display_images(x_imgs=None, y_imgs=None, rows=4, cols=1, fname='output'):
     plt.figure(figsize=(cols*6, rows*2))
     for k in range(rows*cols):
@@ -97,18 +98,44 @@ def display_images(x_imgs=None, y_imgs=None, rows=4, cols=1, fname='output'):
     
     plt.savefig(f'{fname}.png')
 
-  
-
-#load_images(left_x_files[0], right_x_files[0], target_y_files[0])
-
 x_imgs = []
 y_imgs = []
 
-for idx in np.random.randint(0, len(left_x_files), 4):
-    xim, yim = load_images(left_x_files[idx], right_x_files[idx], target_y_files[idx])
+# Sample 4 image triplets
+for i in np.random.randint(0, len(left_x_files), 4):
+    xim, yim = load_images(left_x_files[i], right_x_files[i], target_y_files[i])
     x_imgs.append(xim)
     y_imgs.append(yim)
 
-print(len(x_imgs), len(y_imgs))
-
+# Save the image triplets within a .png file
 display_images(x_imgs, y_imgs, fname='display_test')
+
+
+# Creation of atomic training datasets
+idx = int(BUFFER_SIZE*.8)
+
+train_lx = tf.data.Dataset.list_files(left_x_files[:idx], shuffle=False)
+train_rx = tf.data.Dataset.list_files(right_x_files[:idx], shuffle=False)
+train_y = tf.data.Dataset.list_files(target_y_files[:idx], shuffle=False)
+
+# Pairing previous datasets on a higher-level training dataset
+train_lx_rx_y = tf.data.Dataset.zip((train_lx, train_rx, train_y))
+train_lx_rx_y = train_lx_rx_y.shuffle(buffer_size=idx, reshuffle_each_iteration=True)
+train_lx_rx_y = train_lx_rx_y.map(load_images, num_parallel_calls=tf.data.AUTOTUNE)
+train_lx_rx_y = train_lx_rx_y.batch(BATCH_SIZE)
+
+# Creation of atomic test datasets
+test_lx = tf.data.Dataset.list_files(left_x_files[idx:], shuffle=False)
+test_rx = tf.data.Dataset.list_files(right_x_files[idx:], shuffle=False)
+test_y = tf.data.Dataset.list_files(target_y_files[idx:], shuffle=False)
+
+# Pairing previous datasets on a higher-level test dataset
+test_lx_rx_y = tf.data.Dataset.zip((test_lx, test_rx, test_y))
+test_lx_rx_y = test_lx_rx_y.map(load_images, num_parallel_calls=tf.data.AUTOTUNE)
+test_lx_rx_y = test_lx_rx_y.batch(BATCH_SIZE)
+
+# Checking that Dataset object reads synchronized input/output pairs 
+for x, y in train_lx_rx_y.take(1):
+    display_images(x, y,  fname='dataset_test', rows=min(4, BATCH_SIZE))
+    break
+
