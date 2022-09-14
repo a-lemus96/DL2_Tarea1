@@ -359,7 +359,6 @@ def train_step(input_image, target, step):
 
 
 def fit(train_ds, test_ds, steps):
-  example_input, example_target = next(iter(test_ds.take(1)))
   start = time.time()
 
   for step, (input_image, target) in train_ds.repeat().take(steps).enumerate():
@@ -386,4 +385,16 @@ def fit(train_ds, test_ds, steps):
       checkpoint.save(file_prefix=checkpoint_prefix)
 
 
-fit(train_lx_rx_y, test_lx_rx_y, steps=100)
+fit(train_lx_rx_y, test_lx_rx_y, steps=1000)
+example_input, example_target = next(iter(test_ds.take(1)))
+
+plt.figure(figsize(6, 12))
+plt.subplot(1, 2, 1)
+plt.imshow(((example_target + 1)/2) # Right-view
+plt.axis('off')
+
+plt.subplot(1, 2, 2)
+plt.imshow((generator(example_input, training=False) + 1)/2, cmap='gray') # Target
+plt.axis('off')
+
+plt.savefig('test_model.png')
