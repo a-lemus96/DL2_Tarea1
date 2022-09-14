@@ -1,3 +1,4 @@
+from mimetypes import init
 import os
 from glob import glob
 from random import shuffle
@@ -14,7 +15,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 # Definition of global variables
-INPUT_DIM = (256, 256, 3)
+INPUT_DIM = (256, 256, 6)
 OUTPUT_CHANNELS = 1 # Grayscale image representing disparity
 BATCH_SIZE = 1
 R_LOSS_FACTOR = 10000
@@ -139,3 +140,114 @@ for x, y in train_lx_rx_y.take(1):
     display_images(x, y,  fname='dataset_test', rows=min(4, BATCH_SIZE))
     break
 
+
+# Down-sampling block
+def downsample(filters, size, apply_batchnorm=True):
+    initializer = tf.random_normal_initializer(0., 0.02)
+
+    result = tf.keras.Sequential()
+    result.add(tf.keras.layers.Conv2D(filters=filters,
+                                      kernel_size=size,
+                                      strides=2,
+                                      padding='same',
+                                      kernel_initializer=initializer,
+                                      use_bias=False))
+    
+    if apply_batchnorm:
+        result.add(tf.keras.layers.BatchNormalization())
+
+    result.add(tf.keras.layers.LeakyReLU())
+
+    return result
+
+# Downsampling code verification
+down_model = downsample(3,4)
+down_result = down_model(tf.expand_dims(x_imgs[0], 0))
+
+# Up-sampling block
+def upsample(filters, size, apply_dropout=False):
+    initializer = tf.random_normal_initializer(0., 0.02)
+    
+    result = tf.keras.Sequential()
+    result.add(tf.keras.layers.Conv2DTranspose(filters=filters,
+                                               kernel_size=size,
+                                               strides=2,
+                                               padding='same',
+                                               kernel_initializer=initializer,
+                                               use_bias=False))
+
+    result.add(tf.keras.layers.BatchNormalization())
+
+    if apply_dropout:
+        result.add(tf.keras.layers.Dropout(0.5))
+
+    result.add(tf.keras.layers.ReLU())
+
+    return result
+
+# Upsampling verification
+up_model = upsample(3, 4)
+up_result = up_model(down_result)
+print (up_result.shape)
+
+# UNet Generator
+def Generator():
+    # Layers that compose the net
+    x_input = tf.keras.layers.Input(shape=INPUT_DIM)
+    down_stack = [
+        downsample(64,  4, apply_batchnorm=False),# (batch_size, 128, 128, 64)
+        downsample(128, 4),                       # (batch_size, 64,  64,  128)
+        downsample(256, 4),                       # (batch_size, 32,  32,  256)
+        downsample(512, 4),                       # (batch_size, 16,  16,  512)
+        downsample(512, 4),                       # (batch_size, 8,   8,   512)
+        downsample(512, 4),                       # (batch_size, 4,   4,   512)
+        downsample(512, 4),                       # (batch_size, 2,   2,   512)
+        downsample(512, 4),                       # (batch_size, 1,   1,   512)
+    ]
+
+    up_stack = [
+        upsample(512, 4, apply_dropout=True),     # (batch_size, 2,    2,  1024)
+        upsample(512, 4, apply_dropout=True),     # (batch_size, 4,    4,  1024)
+        upsample(512, 4, apply_dropout=True),     # (batch_size, 8,    8,  1024)
+        upsample(512, 4),                         # (batch_size, 16,   16, 1024)
+        upsample(256, 4),                         # (batch_size, 32,   32, 512)
+        upsample(128, 4),                         # (batch_size, 64,   64, 256)
+        upsample(64,  4),                         # (batch_size, 128, 128, 128)
+    ]
+
+    initializer = tf.random_normal_initializer(0., 0.02)
+    last = tf.keras.layers.Conv2DTranspose(OUTPUT_CHANNELS,
+                                           4,
+                                           strides=2,
+                                           padding='same',
+                                           kernel_initializer=initializer,
+                                           activation='tanh') # (batch_size, 256, 256, 1)
+
+    # Processing pipeline
+    x = x_input
+    
+    # Encoder
+    skips=[]
+    for down in down_stack:
+        x = down(x)
+        skips.append(x) # Output for each downsampling is added to a list
+
+    skips = reversed(skips[:-1])
+    
+    #Decoder
+    for up, skip in zip(up_stack, skips):
+        x = up(x)
+        x = tf.keras.layers.Concatenate()([x, skip])
+    
+    x = last(x)
+
+    return tf.keras.Model(inputs=x_input, outputs=x)
+
+# Test generator 
+generator = Generator()
+gen_output = generator(x_imgs[0][tf.newaxis, ...], training=False)
+print(gen_output.shape)
+plt.figure(figsize=(6.5,6.5))
+plt.imshow(gen_output[0, ...]*50, cmap='gray')
+plt.axis('off')
+plt.savefig("test_generator.png")
