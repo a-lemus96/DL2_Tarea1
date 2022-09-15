@@ -73,8 +73,8 @@ def load_images(left_file, right_file, target_file):
     rx = (rx / 127.5) - 1
     y = (y / 127.5) - 1
 
-    lx = tf.reduce_mean(lx, axis=-1)[..., tf.newaxis]
-    rx = tf.reduce_mean(rx, axis=-1)[..., tf.newaxis]
+    lx = tf.reduce_mean(lx, axis=-1, keepdims=True)
+    rx = tf.reduce_mean(rx, axis=-1, keepdims=True)
 
     # Concatenate input images to form a HxWx6 tensor
     x = tf.concat([lx, rx], axis=-1)
