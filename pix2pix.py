@@ -198,20 +198,12 @@ def Generator():
         downsample(128, 4),                       # (batch_size, 64,  64,  128)
         downsample(256, 4),                       # (batch_size, 32,  32,  256)
         downsample(512, 4),                       # (batch_size, 16,  16,  512)
-        downsample(512, 4),                       # (batch_size, 8,   8,   512)
-        downsample(512, 4),                       # (batch_size, 4,   4,   512)
-        downsample(512, 4),                       # (batch_size, 2,   2,   512)
-        downsample(512, 4),                       # (batch_size, 1,   1,   512)
     ]
 
     up_stack = [
-        upsample(512, 4, apply_dropout=True),     # (batch_size, 2,    2,  1024)
-        upsample(512, 4, apply_dropout=True),     # (batch_size, 4,    4,  1024)
-        upsample(512, 4, apply_dropout=True),     # (batch_size, 8,    8,  1024)
-        upsample(512, 4),                         # (batch_size, 16,   16, 1024)
-        upsample(256, 4),                         # (batch_size, 32,   32, 512)
-        upsample(128, 4),                         # (batch_size, 64,   64, 256)
-        upsample(64,  4),                         # (batch_size, 128, 128, 128)
+        upsample(256, 4, apply_dropout=True),       # (batch_size, 32,   32, 512)
+        upsample(128, 4, apply_dropout=True),       # (batch_size, 64,   64, 256)
+        upsample(64,  4),                           # (batch_size, 128, 128, 128)
     ]
 
     initializer = tf.random_normal_initializer(0., 0.02)
