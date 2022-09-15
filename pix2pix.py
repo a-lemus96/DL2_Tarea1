@@ -14,7 +14,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 # Definition of global variables
-INPUT_DIM = (256, 256, 2)
+INPUT_DIM = (256, 256, 1)
 OUTPUT_CHANNELS = 1 # Grayscale image representing disparity
 BATCH_SIZE = 1
 R_LOSS_FACTOR = 10000
@@ -88,11 +88,11 @@ def display_images(x_imgs=None, y_imgs=None, rows=4, cols=1, fname='output'):
     for k in range(rows*cols):
 
         plt.subplot(rows, cols*3, 3*k + 1)
-        plt.imshow(((x_imgs[k])[:, :, :1] + 1)/2) # Left-view
+        plt.imshow(((x_imgs[k])[:, :,0] + 1)/2) # Left-view
         plt.axis('off')
 
         plt.subplot(rows, cols*3, 3*k + 2)
-        plt.imshow(((x_imgs[k])[:, :, 1:] + 1)/2) # Right-view
+        plt.imshow(((x_imgs[k])[:, :, 0] + 1)/2) # Right-view
         plt.axis('off')
 
         plt.subplot(rows, cols*3, 3*k + 3)
@@ -250,7 +250,7 @@ plt.savefig("test_generator.png")
 def Discriminator():
     initializer = tf.random_normal_initializer(0., 0.02)
 
-    inp = tf.keras.layers.Input(shape=[256, 256, 2], name='input_image')
+    inp = tf.keras.layers.Input(shape=[256, 256, 1], name='input_image')
     tar = tf.keras.layers.Input(shape=[256, 256, 1], name='target_image')
     x = tf.keras.layers.concatenate([inp, tar],  axis=-1)
 
@@ -380,18 +380,29 @@ def fit(train_ds, test_ds, steps):
       checkpoint.save(file_prefix=checkpoint_prefix)
 
 
-fit(train_lx_rx_y, test_lx_rx_y, steps=10000)
+fit(train_lx_rx_y, test_lx_rx_y, steps=1000)
 example_input, example_target = next(iter(test_lx_rx_y.take(1)))
 
-plt.figure(figsize=(6, 6))
-#plt.subplot(1, 2, 1)
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
 plt.imshow((example_target[0] + 1)/2, cmap='gray') # Right-view
 plt.axis('off')
-plt.savefig('test_model_1.png')
 
-plt.figure(figsize=(6, 6))
-#plt.subplot(1, 2, 2)
+plt.subplot(1, 2, 2)
 plt.imshow((generator(example_input, training=False)[0, ...] + 1)/2, cmap='gray') # Target
 plt.axis('off')
 
-plt.savefig('test_model_2.png')
+plt.savefig('test_model.png')
+
+example_test_input, example_test_target = next(iter(train_lx_rx_y.take(1)))
+
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+plt.imshow((example_test_target[0] + 1)/2, cmap='gray') # Right-view
+plt.axis('off')
+
+plt.subplot(1, 2, 2)
+plt.imshow((generator(example_test_input, training=False)[0, ...] + 1)/2, cmap='gray') # Target
+plt.axis('off')
+
+plt.savefig('train_model.png')
