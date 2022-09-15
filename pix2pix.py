@@ -377,7 +377,7 @@ def fit(train_ds, test_ds, steps):
       checkpoint.save(file_prefix=checkpoint_prefix)
 
 
-fit(train_lx_rx_y, test_lx_rx_y, steps=10000)
+fit(train_lx_rx_y, test_lx_rx_y, steps=50000)
 example_input, example_target = next(iter(test_lx_rx_y.take(1)))
 
 plt.figure(figsize=(6, 6))
