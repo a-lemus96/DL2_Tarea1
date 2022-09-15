@@ -14,7 +14,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 # Definition of global variables
-INPUT_DIM = (256, 256, 3)
+INPUT_DIM = (256, 256, 9)
 OUTPUT_CHANNELS = 1 # Grayscale image representing disparity
 BATCH_SIZE = 1
 R_LOSS_FACTOR = 10000
@@ -76,6 +76,10 @@ def load_images(left_file, right_file, target_file):
     # Substract images
     x = lx - rx
     x = x/2.0
+
+    # Concat images
+
+    x = tf.concat([lx, rx, x], axis=-1)
     
     return x, y
 
@@ -86,11 +90,11 @@ def display_images(x_imgs=None, y_imgs=None, rows=4, cols=1, fname='output'):
     for k in range(rows*cols):
 
         plt.subplot(rows, cols*3, 3*k + 1)
-        plt.imshow(((x_imgs[k]) + 1)/2) # Left-view
+        plt.imshow(((x_imgs[k])[..., :3] + 1)/2) # Left-view
         plt.axis('off')
 
         plt.subplot(rows, cols*3, 3*k + 2)
-        plt.imshow(((x_imgs[k]) + 1)/2) # Right-view
+        plt.imshow(((x_imgs[k])[..., 3:6] + 1)/2) # Right-view
         plt.axis('off')
 
         plt.subplot(rows, cols*3, 3*k + 3)
@@ -248,7 +252,7 @@ plt.savefig("test_generator.png")
 def Discriminator():
     initializer = tf.random_normal_initializer(0., 0.02)
 
-    inp = tf.keras.layers.Input(shape=[256, 256, 3], name='input_image')
+    inp = tf.keras.layers.Input(shape=[256, 256, 9], name='input_image')
     tar = tf.keras.layers.Input(shape=[256, 256, 1], name='target_image')
     x = tf.keras.layers.concatenate([inp, tar],  axis=-1)
 
@@ -378,7 +382,7 @@ def fit(train_ds, test_ds, steps):
       checkpoint.save(file_prefix=checkpoint_prefix)
 
 
-fit(train_lx_rx_y, test_lx_rx_y, steps=1000)
+fit(train_lx_rx_y, test_lx_rx_y, steps=100000)
 example_input, example_target = next(iter(test_lx_rx_y.take(1)))
 
 plt.figure(figsize=(12, 6))
