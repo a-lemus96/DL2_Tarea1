@@ -14,7 +14,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 # Definition of global variables
-INPUT_DIM = (256, 256, 6)
+INPUT_DIM = (256, 256, 2)
 OUTPUT_CHANNELS = 1 # Grayscale image representing disparity
 BATCH_SIZE = 1
 R_LOSS_FACTOR = 10000
@@ -73,6 +73,9 @@ def load_images(left_file, right_file, target_file):
     rx = (rx / 127.5) - 1
     y = (y / 127.5) - 1
 
+    lx = tf.mean(lx, axis=-1)
+    rx = tf.mean(rx, axis=-1)
+
     # Concatenate input images to form a HxWx6 tensor
     x = tf.concat([lx, rx], axis=-1)
     
@@ -85,11 +88,11 @@ def display_images(x_imgs=None, y_imgs=None, rows=4, cols=1, fname='output'):
     for k in range(rows*cols):
 
         plt.subplot(rows, cols*3, 3*k + 1)
-        plt.imshow(((x_imgs[k])[:, :, :3] + 1)/2) # Left-view
+        plt.imshow(((x_imgs[k])[:, :, :1] + 1)/2) # Left-view
         plt.axis('off')
 
         plt.subplot(rows, cols*3, 3*k + 2)
-        plt.imshow(((x_imgs[k])[:, :, 3:] + 1)/2) # Right-view
+        plt.imshow(((x_imgs[k])[:, :, 1:] + 1)/2) # Right-view
         plt.axis('off')
 
         plt.subplot(rows, cols*3, 3*k + 3)
